@@ -4,18 +4,47 @@ import gensim
 import wikipedia
 from DIRT import run_dirt
 from data_reading import read_text_from_dir
+from data_reading import read_corpus
 from build_dicts import DIRT_counts, calculate_accumulated_stats, sim, mi, X, Y
 import pickle
 from itertools import combinations
 import numpy as np
 min_path_count = 10
 
+
+def create_triplets_dataset_from_wiki():
+    reader = read_corpus("/Users/danamir/CS/MC/MC-DIRTEMB/corpus_ex2")
+    all_paths = []
+    j = 0
+    for i, text in enumerate(reader):
+        print("finished reading corpus batch %d" % i)
+        analyzed_text = nlp_model(text, disable=["ner","textcat"])
+        print("finished analyzing corpus for batch %d" % i)
+        paths = run_dirt(analyzed_text)
+        all_paths.extend(paths)
+        if len(all_paths) > 200000:
+            frequencies, words = DIRT_counts(all_paths)
+            with open("wiki_frequencies%d.pkl" % j, "wb") as ff:
+                pickle.dump(frequencies, ff)
+            with open("wiki_words%d.pkl" % j, "wb") as wf:
+                pickle.dump(words, wf)
+            all_paths = []
+            j += 1
+
+    frequencies, words = DIRT_counts(all_paths)
+    with open("wiki_frequencies%d.pkl" % j, "wb") as ff:
+        pickle.dump(frequencies, ff)
+    with open("wiki_words%d.pkl" % j, "wb") as wf:
+        pickle.dump(words, wf)
+
+
 def main():
     all_paths = []
-    # wiki_files = []
-    # for i in range(1000):
-    #     file_name = wikipedia.random(1)
-    #     text = wikipedia.page(file_name).content
+    wiki_files = []
+    for i in range(1000):
+        file_name = wikipedia.random(1)
+        text = wikipedia.page(file_name).content
+        print(text)
 
     for text, file_name in read_text_from_dir("/Users/danamir/CS/MC/MC-Project/bbcsport/football"):
         print("analyzing file: %s" % file_name)
@@ -98,4 +127,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    create_triplets_dataset_from_wiki()
