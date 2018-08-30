@@ -21,6 +21,8 @@ class SimplifiedToken(object):
     def __str__(self):
         return self.str
 
+    def __repr__(self):
+        return str(self)
 
 class Path(object):  # TODO: implement simple token replacement to allow path pickling
     def __init__(self, token_a, token_b):
@@ -35,7 +37,7 @@ class Path(object):  # TODO: implement simple token replacement to allow path pi
                 break
         left_path = a_anc[-1:lca:-1]
         right_path = b_anc[lca + 1:]
-        self.root_index = 2 * lca
+        self.root_index = 2 * len(left_path)
 
         tokens_path = left_path + [a_anc[lca]] + right_path
         self.tokens_path = [SimplifiedToken(t) for t in tokens_path]
@@ -109,6 +111,9 @@ class Path(object):  # TODO: implement simple token replacement to allow path pi
             raise ValueError("invalid input for function get_filler")
         return str(self.token_a) if item == 0 else str(self.token_b)
 
+    def __repr__(self):
+        return str(self)
+
 
 class SimplifiedPath(object):
     def __init__(self, path_object):
@@ -145,6 +150,9 @@ class SimplifiedPath(object):
     def __eq__(self, other):
         return str(self) == str(other)
 
+    def __repr__(self):
+        return str(self)
+
 
 def extract_nouns_from_sentence(sent):
     nouns = []
@@ -160,23 +168,23 @@ def extract_paths_from_sent(sent):
     for noun_a, noun_b in combinations(nouns, 2):
         if noun_a == noun_b.head or noun_b == noun_a.head:  # discard empty rough paths before creation
             continue
-        rough_path = Path(noun_a, noun_b)
+        raw_path = Path(noun_a, noun_b)
         to_remove = []
-        for i, element in enumerate(rough_path.get_path()):
+        for i, element in enumerate(raw_path.get_path()):
             if element[1] == DEP:
-                prev_pos = rough_path.full_path[i-1][0].pos_
-                next_pos = rough_path.full_path[i + 1][0].pos_
+                prev_pos = raw_path.full_path[i-1][0].pos_
+                next_pos = raw_path.full_path[i + 1][0].pos_
                 if (prev_pos not in CONTENT_WORD_POS) and (next_pos not in CONTENT_WORD_POS):
                     to_remove.append(i)
         for index in to_remove[::-1]:
-            rough_path.remove_dep(index)
+            raw_path.remove_dep(index)
 
-        if len(rough_path.tokens_path) < 3: # there are only filler words in the path..
+        if len(raw_path.tokens_path) < 3: # there are only filler words in the path..
             continue
-        if PROPN in [t.pos_ for t in rough_path.tokens_path]:  # filter relations with proper nouns
+        if PROPN in [t.pos_ for t in raw_path.tokens_path]:  # filter relations with proper nouns
             continue
-        paths.append(SimplifiedPath(rough_path))
-        paths.append(SimplifiedPath(rough_path.reverse()))
+        paths.append(SimplifiedPath(raw_path))
+        paths.append(SimplifiedPath(raw_path.reverse()))
     return paths
 
 
