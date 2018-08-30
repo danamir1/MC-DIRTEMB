@@ -85,3 +85,4 @@ def sim(p1, s1, p2, s2, frequencies, accumulated_counts):
         denominator += mi(p2, s2, w, frequencies, accumulated_counts)
     return counter/denominator
 
+
