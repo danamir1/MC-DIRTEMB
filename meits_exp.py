@@ -12,4 +12,3 @@ def read_corpus(path):
             else:
                 cur_sent.append(line)
     return sentences
-
