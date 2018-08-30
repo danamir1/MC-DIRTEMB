@@ -86,3 +86,5 @@ def sim(p1, s1, p2, s2, frequencies, accumulated_counts):
     return counter/denominator
 
 
+def S(p1, p2):
+    return math.sqrt(sim(p1, X, p2, X) * sim((p1, Y, p2, Y)))
