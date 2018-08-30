@@ -62,7 +62,7 @@ class Path(object):  # TODO: implement simple token replacement to allow path pi
         reverse.tokens_path = self.tokens_path[::-1].copy()
         reverse.token_a = self.token_b
         reverse.token_b = self.token_a
-        reverse.root_index = len(self.full_path) - self.root_index
+        reverse.root_index = len(self.full_path) - self.root_index - 1
         return reverse
 
     def __str__(self):
