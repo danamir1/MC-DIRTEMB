@@ -39,13 +39,13 @@ def our_counts(all_paths, verbose=True):
             print("finished counting for %d paths out of %d" % (i, len(all_paths)))
         w1_w2 = p[X] + CONCAT + p[Y]
         if p not in frequencies:
-            frequencies[p] = {}
-        if w1_w2 not in words:
+            frequencies[p] = [{}]
+        if p[w1_w2] not in words:
             words[w1_w2] = set()
         words[w1_w2].add(p)
-        if p[w1_w2] not in frequencies[p][w1_w2]:
-            frequencies[p][w1_w2] = 0
-        frequencies[p][w1_w2] += 1
+        if w1_w2 not in frequencies[p][X]:
+            frequencies[p][X][w1_w2] = 0
+        frequencies[p][X][w1_w2] += 1
     return frequencies, words
 
 
