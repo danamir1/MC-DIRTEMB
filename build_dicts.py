@@ -40,13 +40,6 @@ def mi(p, slot, w, frequencies, accumulated_counts):
     :return: mutual information for the triplet, calculated by:
     mi(p, slot, w) = log((|p,slot,w|x|*,slot,*)/(p,slot,*|x|*, slot, w))
     """
-    # paths_for_w = dirt_words[w]
-    # paths_counter = 0
-    # for path in paths_for_w:
-    #     if w in dirt_freqs[path][slot]:
-    #         paths_counter += 1
-    # counter = dirt_freqs[p][slot][w] * (len(dirt_freqs)/2) ???
-    # denominator = len(dirt_freqs[p][slot]) * paths_counter
     counter = frequencies[p][slot][w] * accumulated_counts.slot[slot]
     denominator = accumulated_counts.path_slot[(p, slot)] * accumulated_counts.slot_word[(slot, w)]
     return math.log((counter / denominator) + EPSILON)
@@ -91,7 +84,4 @@ def sim(p1, s1, p2, s2, frequencies, accumulated_counts):
     for w in T_p2_s:
         denominator += mi(p2, s2, w, frequencies, accumulated_counts)
     return counter/denominator
-
-# all = []
-# dirt_freqs, dirt_words = DIRT_counts(all)
 
