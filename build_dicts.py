@@ -4,8 +4,9 @@ from collections import defaultdict, namedtuple
 X = 0
 Y = 1
 EPSILON = 1e-100
-
+CONCAT = "#"
 AccumulatedCounts = namedtuple('AccumulatedCounts', ['path_slot', 'slot', 'slot_word'])
+
 
 def DIRT_counts(all_paths, verbose=True):
     frequencies = {} # dictionary for each path containing dictionary of X, Y
@@ -27,6 +28,24 @@ def DIRT_counts(all_paths, verbose=True):
         if p[Y] not in frequencies[p][Y]:
             frequencies[p][Y][p[Y]] = 0
         frequencies[p][Y][p[Y]] += 1
+    return frequencies, words
+
+
+def our_counts(all_paths, verbose=True):
+    frequencies = {} # dictionary for each path containing dictionary of X, Y
+    words = {} # dictionary of all words that appeared at any path
+    for i, p in enumerate(all_paths):
+        if i % 1000 == 0 and verbose:
+            print("finished counting for %d paths out of %d" % (i, len(all_paths)))
+        w1_w2 = p[X] + CONCAT + p[Y]
+        if p not in frequencies:
+            frequencies[p] = {}
+        if w1_w2 not in words:
+            words[w1_w2] = set()
+        words[w1_w2].add(p)
+        if p[w1_w2] not in frequencies[p][w1_w2]:
+            frequencies[p][w1_w2] = 0
+        frequencies[p][w1_w2] += 1
     return frequencies, words
 
 
@@ -88,3 +107,4 @@ def sim(p1, s1, p2, s2, frequencies, accumulated_counts):
 
 def S(p1, p2):
     return math.sqrt(sim(p1, X, p2, X) * sim((p1, Y, p2, Y)))
+
